@@ -18,7 +18,11 @@
 
 package io.ballerina.stdlib.grpc.plugin;
 
+import io.ballerina.compiler.api.symbols.ServiceDeclarationSymbol;
+import io.ballerina.compiler.api.symbols.Symbol;
 import io.ballerina.compiler.syntax.tree.ServiceDeclarationNode;
+import io.ballerina.projects.BuildOptions;
+import io.ballerina.projects.Project;
 import io.ballerina.projects.plugins.AnalysisTask;
 import io.ballerina.projects.plugins.SyntaxNodeAnalysisContext;
 import io.ballerina.stdlib.grpc.plugin.endpointyaml.generator.EndpointYamlGenerator;
@@ -28,29 +32,49 @@ import io.ballerina.tools.diagnostics.DiagnosticInfo;
 import io.ballerina.tools.diagnostics.DiagnosticSeverity;
 
 import java.io.IOException;
+import java.util.Optional;
+
+import static io.ballerina.stdlib.grpc.plugin.GrpcServiceValidator.isBallerinaGrpcService;
 
 public class GrpcServiceAnalysisTask implements AnalysisTask<SyntaxNodeAnalysisContext> {
     @Override
     public void perform(SyntaxNodeAnalysisContext context) {
         ServiceDeclarationNode serviceNode = (ServiceDeclarationNode) context.node();
-        EndpointYamlGenerator endpointYamlGeneratorGrpc = new EndpointYamlGenerator(context);
-        ProtoFileExporter protoFileExporter = new ProtoFileExporter(context);
-        try {
-            endpointYamlGeneratorGrpc.writeEndpointYaml();
-            protoFileExporter.exportProtoFile();
-        } catch (IOException e) {
-            context.reportDiagnostic(
-                DiagnosticFactory.createDiagnostic(
-                    new DiagnosticInfo(
-                        "GRPC_PLUGIN_DEBUG",
-                        "[grpc-plugin] " +
-                        e.getMessage(),
-                        DiagnosticSeverity.ERROR
-                    ),
-                    serviceNode.location()
-                )
-            );
+
+        Optional<Symbol> symbol = context.semanticModel().symbol(serviceNode);
+        if (symbol.isEmpty() || !(symbol.get() instanceof ServiceDeclarationSymbol serviceDeclarationSymbol)) {
+            return;
         }
 
+        EndpointYamlGenerator endpointYamlGeneratorGrpc = new EndpointYamlGenerator(context);
+        ProtoFileExporter protoFileExporter = new ProtoFileExporter(context);
+
+        Project project = context.currentPackage().project();
+        BuildOptions buildOptions = project.buildOptions();
+        boolean isExportEndpoints = false;
+
+        try {
+            isExportEndpoints = buildOptions.exportEndpoints();
+        } catch (NoSuchMethodError e) {
+            // Used to catch the buildOption not found error for earlier ballerina versions
+        }
+
+        if (isBallerinaGrpcService(serviceDeclarationSymbol) && isExportEndpoints) {
+            try {
+                endpointYamlGeneratorGrpc.writeEndpointYaml();
+                protoFileExporter.exportProtoFile();
+            } catch (IOException e) {
+                context.reportDiagnostic(
+                    DiagnosticFactory.createDiagnostic(
+                        new DiagnosticInfo(
+                                "GRPC_PLUGIN_DEBUG",
+                                "[grpc-plugin] " + e.getMessage(),
+                                DiagnosticSeverity.ERROR
+                        ),
+                        serviceNode.location()
+                    )
+                );
+            }
+        }
     }
 }

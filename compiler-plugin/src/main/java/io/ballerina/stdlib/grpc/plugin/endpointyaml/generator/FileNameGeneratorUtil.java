@@ -78,7 +78,7 @@ public class FileNameGeneratorUtil {
         return constructFileName(syntaxTree, services, serviceSymbol.get());
     }
 
-    private void extractServiceNodes(ModulePartNode modulePartNode,
+    public void extractServiceNodes(ModulePartNode modulePartNode,
                                      SemanticModel semanticModel) {
         List<String> allServices = new ArrayList<>();
         for (Node node : modulePartNode.members()) {

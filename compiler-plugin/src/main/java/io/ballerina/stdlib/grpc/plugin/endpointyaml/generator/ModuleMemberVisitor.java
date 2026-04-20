@@ -22,6 +22,7 @@ import io.ballerina.compiler.syntax.tree.ListenerDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.ModuleVariableDeclarationNode;
 import io.ballerina.compiler.syntax.tree.Node;
+import io.ballerina.compiler.syntax.tree.NodeParser;
 import io.ballerina.compiler.syntax.tree.NodeVisitor;
 import io.ballerina.compiler.syntax.tree.SyntaxKind;
 import io.ballerina.compiler.syntax.tree.TypeDescriptorNode;
@@ -39,6 +40,13 @@ public class ModuleMemberVisitor extends NodeVisitor {
     private final SemanticModel semanticModel;
 
     public record VariableDeclaredValue(String value, boolean isConfigurable) {
+        public VariableDeclaredValue {
+            value = value == null ? null : String.valueOf(NodeParser.parseExpression(value));
+        }
+
+        public String value() {
+            return value == null ? null : String.valueOf(NodeParser.parseExpression(value));
+        }
     }
 
     public ModuleMemberVisitor(SemanticModel semanticModel) {
