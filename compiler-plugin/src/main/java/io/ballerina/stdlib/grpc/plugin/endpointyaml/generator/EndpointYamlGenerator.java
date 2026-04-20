@@ -16,7 +16,6 @@
  * under the License.
  */
 
-
 package io.ballerina.stdlib.grpc.plugin.endpointyaml.generator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,7 +59,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static io.ballerina.stdlib.grpc.plugin.endpointyaml.generator.FileNameGeneratorUtil.resolveContractFileName;
-
 
 public class EndpointYamlGenerator {
     private final ServiceDeclarationNode node;
