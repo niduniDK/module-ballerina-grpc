@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- [Address `CVE-2026-33870` and `CVE-2026-33871` Netty vulnerability in Standard Libraries](https://github.com/ballerina-platform/ballerina-library/issues/8738)
+
+## [1.14.4] - 2026-01-26
+
+### Fixed
+
 - [Address gRPC server startup issue after netty update](https://github.com/ballerina-platform/ballerina-library/issues/8568)
 
 ## [1.14.3] - 2026-01-09
