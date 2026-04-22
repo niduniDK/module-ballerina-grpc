@@ -46,8 +46,8 @@ public class ServiceDescExtractor {
     );
 
     private static final Set<String> DESCRIPTOR_FIELD_NAMES = Set.of(
-            "value",       // @grpc:Descriptor {value: ROOT_DESCRIPTOR}
-            "descriptor"   // @grpc:ServiceDescriptor {descriptor: ROOT_DESCRIPTOR}
+            "value",
+            "descriptor"
     );
 
     private final SemanticModel semanticModel;
@@ -56,8 +56,7 @@ public class ServiceDescExtractor {
     private final AtomicReference<DescriptorProtos.FileDescriptorProto> fileDescriptor
             = new AtomicReference<>();
 
-    public ServiceDescExtractor(ServiceDeclarationNode serviceNode,
-                                SemanticModel semanticModel,
+    public ServiceDescExtractor(SemanticModel semanticModel,
                                 SyntaxNodeAnalysisContext context) {
         this.semanticModel = semanticModel;
         this.context = context;

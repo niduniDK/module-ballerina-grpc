@@ -20,7 +20,6 @@ package io.ballerina.stdlib.grpc.plugin.endpointyaml.generator;
 
 import com.google.protobuf.DescriptorProtos;
 import io.ballerina.compiler.api.SemanticModel;
-import io.ballerina.compiler.syntax.tree.ServiceDeclarationNode;
 import io.ballerina.projects.plugins.SyntaxNodeAnalysisContext;
 
 import java.io.IOException;
@@ -32,16 +31,14 @@ public class ProtoFileExporter {
     private static final String ARTIFACT = "artifact";
     private static final String TARGET = "target";
     private final SyntaxNodeAnalysisContext context;
-    private final ServiceDeclarationNode serviceNode;
     private final SemanticModel semanticModel;
 
     public ProtoFileExporter(SyntaxNodeAnalysisContext context) {
         this.context = context;
-        this.serviceNode = (ServiceDeclarationNode) this.context.node();
         this.semanticModel = this.context.semanticModel();
     }
     public void exportProtoFile() throws IOException {
-        ServiceDescExtractor descExtractor = new ServiceDescExtractor(this.serviceNode, this.semanticModel, context);
+        ServiceDescExtractor descExtractor = new ServiceDescExtractor(this.semanticModel, context);
         AtomicReference<DescriptorProtos.FileDescriptorProto> fds = descExtractor.extract();
         FileNameGeneratorUtil fileNameGeneratorUtil = new FileNameGeneratorUtil(this.context);
         String filePath = fileNameGeneratorUtil.getFileName();

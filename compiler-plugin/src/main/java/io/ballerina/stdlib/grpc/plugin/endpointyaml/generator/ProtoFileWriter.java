@@ -27,6 +27,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ProtoFileWriter {
 
+    private ProtoFileWriter() {
+    }
+
     public static void writeToProtoFile(
             AtomicReference<DescriptorProtos.FileDescriptorProto> fileDescriptor,
             String outputPath) throws IOException {

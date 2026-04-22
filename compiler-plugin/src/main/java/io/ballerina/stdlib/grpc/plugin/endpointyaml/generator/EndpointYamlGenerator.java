@@ -69,7 +69,7 @@ public class EndpointYamlGenerator {
 
     private int port;
     final PackageMemberVisitor packageMemberVisitor = new PackageMemberVisitor();
-    private final PrintStream outStream = System.out;
+    private static final PrintStream outStream = System.out;
 
     private static final String ARTIFACT = "artifact";
     private static final String GRPC = "GRPC";
@@ -248,7 +248,7 @@ public class EndpointYamlGenerator {
         return basePath.toString();
     }
 
-    public void writeEndpointYaml() throws IOException {
+    public void writeEndpointYaml() {
         Endpoint ep = getEndpoint();
         Path outPath = resolveOutputPath();
         String fileName = buildEndpointFileName(outPath);
