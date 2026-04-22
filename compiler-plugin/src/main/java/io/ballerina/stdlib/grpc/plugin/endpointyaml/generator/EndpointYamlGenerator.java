@@ -50,7 +50,6 @@ import io.ballerina.tools.diagnostics.DiagnosticInfo;
 import io.ballerina.tools.diagnostics.DiagnosticSeverity;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,7 +66,6 @@ public class EndpointYamlGenerator {
 
     private int port;
     final PackageMemberVisitor packageMemberVisitor = new PackageMemberVisitor();
-    private static final PrintStream outStream = System.out;
 
     private static final String ARTIFACT = "artifact";
     private static final String GRPC = "GRPC";
@@ -246,7 +244,7 @@ public class EndpointYamlGenerator {
         return basePath.toString();
     }
 
-    public void writeEndpointYaml() {
+    public void writeEndpointYaml() throws IOException {
         Endpoint ep = getEndpoint();
         Path outPath = resolveOutputPath();
         String fileName = buildEndpointFileName(outPath);
@@ -254,16 +252,11 @@ public class EndpointYamlGenerator {
         writeYaml(path, new EndpointWrapper(ep));
     }
 
-    private Path resolveOutputPath() {
+    private Path resolveOutputPath() throws IOException {
         Package currentPackage = this.context.currentPackage();
         Project project = currentPackage.project();
         Path outPath = project.targetDir();
-
-        try {
-            Files.createDirectories(Paths.get(String.valueOf(outPath), ARTIFACT));
-        } catch (IOException e) {
-            outStream.println(e.getMessage());
-        }
+        Files.createDirectories(Paths.get(String.valueOf(outPath), ARTIFACT));
         return outPath;
     }
 
@@ -282,7 +275,7 @@ public class EndpointYamlGenerator {
         try (Writer writer = Files.newBufferedWriter(path)) {
             mapper.writeValue(writer, wrapper);
         } catch (IOException e) {
-            outStream.println(e.getMessage());
+            e.printStackTrace(System.out);
         }
     }
 
