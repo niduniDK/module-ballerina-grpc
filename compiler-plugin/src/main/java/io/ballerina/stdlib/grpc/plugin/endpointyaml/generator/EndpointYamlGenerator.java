@@ -53,7 +53,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
 
@@ -69,7 +68,6 @@ public class EndpointYamlGenerator {
 
     private static final String ARTIFACT = "artifact";
     private static final String GRPC = "GRPC";
-    private static final String TARGET = "target";
     private static final String YAML_EXTENSION = ".yaml";
     private static final String ENDPOINT_SUFFIX = "_endpoint";
 
@@ -95,7 +93,7 @@ public class EndpointYamlGenerator {
         port = resolvePort(listenerInfo.argList());
         String basePath = buildBasePath();
 
-        return new Endpoint(String.valueOf(port), basePath, GRPC, this.schemaFileName);
+        return new Endpoint(port, basePath, GRPC, this.schemaFileName);
     }
 
     private void ensureModuleVisited(String moduleName) {
@@ -248,7 +246,7 @@ public class EndpointYamlGenerator {
         Endpoint ep = getEndpoint();
         Path outPath = resolveOutputPath();
         String fileName = buildEndpointFileName(outPath);
-        Path path = Paths.get(TARGET, ARTIFACT, fileName + YAML_EXTENSION).toAbsolutePath();
+        Path path = outPath.resolve(ARTIFACT).resolve(fileName + YAML_EXTENSION).toAbsolutePath();
         writeYaml(path, new EndpointWrapper(ep));
     }
 
@@ -256,7 +254,7 @@ public class EndpointYamlGenerator {
         Package currentPackage = this.context.currentPackage();
         Project project = currentPackage.project();
         Path outPath = project.targetDir();
-        Files.createDirectories(Paths.get(String.valueOf(outPath), ARTIFACT));
+        Files.createDirectories(outPath.resolve(ARTIFACT));
         return outPath;
     }
 

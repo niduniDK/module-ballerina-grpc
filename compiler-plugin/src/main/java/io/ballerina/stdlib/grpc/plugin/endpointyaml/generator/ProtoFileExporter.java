@@ -20,16 +20,17 @@ package io.ballerina.stdlib.grpc.plugin.endpointyaml.generator;
 
 import com.google.protobuf.DescriptorProtos;
 import io.ballerina.compiler.api.SemanticModel;
+import io.ballerina.projects.Package;
+import io.ballerina.projects.Project;
 import io.ballerina.projects.plugins.SyntaxNodeAnalysisContext;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ProtoFileExporter {
     private static final String ARTIFACT = "artifact";
-    private static final String TARGET = "target";
     private final SyntaxNodeAnalysisContext context;
     private final SemanticModel semanticModel;
 
@@ -42,7 +43,11 @@ public class ProtoFileExporter {
         AtomicReference<DescriptorProtos.FileDescriptorProto> fds = descExtractor.extract();
         FileNameGeneratorUtil fileNameGeneratorUtil = new FileNameGeneratorUtil(this.context);
         String filePath = fileNameGeneratorUtil.getFileName();
-        Path path = Paths.get(TARGET, ARTIFACT, filePath).toAbsolutePath();
+        Package currentPackage = this.context.currentPackage();
+        Project project = currentPackage.project();
+        Path outPath = project.targetDir();
+        Files.createDirectories(outPath.resolve(ARTIFACT));
+        Path path = outPath.resolve(ARTIFACT).resolve(filePath).toAbsolutePath();
         ProtoFileWriter.writeToProtoFile(fds, path.toString());
     }
 }
